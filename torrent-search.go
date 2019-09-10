@@ -116,59 +116,34 @@ func readJSON(res *http.Response) YTS {
 		log.Fatal(err)
 		os.Exit(0)
 	}
+	if movies.Data.MovieCount == 0 {
+		fmt.Println("No Movies found")
+		os.Exit(0)
+	}
 	return movies
 }
 
+// Printer prints the JSON response
 func Printer(movies YTS) {
 
-	fmt.Println("Status: ", movies.Status)
-	fmt.Println("Status Message: ", movies.StatusMessage)
 	fmt.Println("Movie Count: ", movies.Data.MovieCount)
 
-	/*
-		var j int
-		for i, movielist := range movies.Data.Movies {
-			fmt.Println("URL:", movielist.URL)
-			fmt.Println("Title: ", movielist.TitleLong)
-			fmt.Println("Year: ", movielist.Year)
-			fmt.Println("Rating: ", movielist.Rating)
-			fmt.Println("Runtime: ", movielist.Runtime)
-
-			for _, genre := range movielist.Genres {
-				fmt.Println("Genre: ", genre)
-			}
-
-			for _, torrent := range movielist.Torrents {
-				fmt.Println("URL: ", torrent.URL)
-				fmt.Println("Quality: ", torrent.Quality)
-				fmt.Println("Type: ", torrent.Type)
-				fmt.Println("Seeds: ", torrent.Seeds)
-				fmt.Println("Peers: ", torrent.Peers)
-				fmt.Println("Size: ", torrent.Size)
-			}
-			j = i
-			fmt.Println()
-		}
-		fmt.Println("Movies: ", j)
-	*/
-
 	for _, movielist := range movies.Data.Movies {
-		fmt.Printf("TITLE: %6s | RATING: %.1f\n", movielist.TitleLong, movielist.Rating)
+		fmt.Printf("%9s %-6s | RATING: %.1f\n", "TITLE:", movielist.TitleLong, movielist.Rating)
 
-		fmt.Printf("GENRE: ")
+		fmt.Printf("%9s ", "GENRE:")
 		for _, genre := range movielist.Genres {
 			fmt.Printf("%6s ", genre)
 		}
 		fmt.Println()
 
-		fmt.Printf("TORRENTS\n")
+		fmt.Printf("TORRENTS: \n")
 		for _, torrent := range movielist.Torrents {
-			fmt.Printf("QUALITY: %6s | SEEDS: %3d | PEERS: %3d\n", torrent.Quality, torrent.Seeds, torrent.Peers)
-			fmt.Printf("URL: %6s", torrent.URL)
+			fmt.Printf("\t%2sQUALITY: %4s | TYPE: %6s | SEEDS: %3d | PEERS: %3d\n", " ", torrent.Quality, torrent.Type, torrent.Seeds, torrent.Peers)
+			fmt.Printf("\t%2sURL: %6s", " ", torrent.URL)
 			fmt.Println()
 		}
-
-		fmt.Println()
-		fmt.Println()
+		fmt.Println("\n")
 	}
+
 }
