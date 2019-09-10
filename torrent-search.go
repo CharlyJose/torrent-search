@@ -66,7 +66,7 @@ type YTS struct {
 }
 
 func main() {
-	readJSON(request(userInput()))
+	Printer(readJSON(request(userInput())))
 }
 
 func userInput() string {
@@ -108,40 +108,67 @@ func request(url string) *http.Response {
 // 	return body
 // }
 
-func readJSON(res *http.Response) {
+func readJSON(res *http.Response) YTS {
 	var movies YTS
 	jsonParser := json.NewDecoder(res.Body)
 	err := jsonParser.Decode(&movies)
 	if err != nil {
 		log.Fatal(err)
-		return
+		os.Exit(0)
 	}
+	return movies
+}
+
+func Printer(movies YTS) {
 
 	fmt.Println("Status: ", movies.Status)
 	fmt.Println("Status Message: ", movies.StatusMessage)
 	fmt.Println("Movie Count: ", movies.Data.MovieCount)
 
-	var j int
-	for i, movielist := range movies.Data.Movies {
-		fmt.Println("URL:", movielist.URL)
-		fmt.Println("Title: ", movielist.TitleLong)
-		fmt.Println("Year: ", movielist.Year)
-		fmt.Println("Rating: ", movielist.Rating)
-		fmt.Println("Runtime: ", movielist.Runtime)
+	/*
+		var j int
+		for i, movielist := range movies.Data.Movies {
+			fmt.Println("URL:", movielist.URL)
+			fmt.Println("Title: ", movielist.TitleLong)
+			fmt.Println("Year: ", movielist.Year)
+			fmt.Println("Rating: ", movielist.Rating)
+			fmt.Println("Runtime: ", movielist.Runtime)
 
+			for _, genre := range movielist.Genres {
+				fmt.Println("Genre: ", genre)
+			}
+
+			for _, torrent := range movielist.Torrents {
+				fmt.Println("URL: ", torrent.URL)
+				fmt.Println("Quality: ", torrent.Quality)
+				fmt.Println("Type: ", torrent.Type)
+				fmt.Println("Seeds: ", torrent.Seeds)
+				fmt.Println("Peers: ", torrent.Peers)
+				fmt.Println("Size: ", torrent.Size)
+			}
+			j = i
+			fmt.Println()
+		}
+		fmt.Println("Movies: ", j)
+	*/
+
+	for _, movielist := range movies.Data.Movies {
+		fmt.Printf("TITLE: %6s | RATING: %1f\n", movielist.TitleLong, movielist.Rating)
+
+		fmt.Printf("GENRE: ")
 		for _, genre := range movielist.Genres {
-			fmt.Println("Genre: ", genre)
+			fmt.Printf("%6s ", genre)
+		}
+		fmt.Println()
+
+		fmt.Printf("TORRENTS\n")
+		for _, torrent := range movielist.Torrents {
+			fmt.Printf("QUALITY: %6s | SEEDS: %3d | PEERS: %3d\n", torrent.Quality, torrent.Seeds, torrent.Peers)
+			fmt.Printf("URL: %6s", torrent.URL)
+			fmt.Println()
 		}
 
-		for _, torrent := range movielist.Torrents {
-			fmt.Println("URL: ", torrent.URL)
-			fmt.Println("Quality: ", torrent.Quality)
-			fmt.Println("Entype: ", torrent.Type)
-			fmt.Println("Seeds: ", torrent.Seeds)
-			fmt.Println("Peers: ", torrent.Peers)
-			fmt.Println("Size: ", torrent.Size)
-		}
-		j = i
+		fmt.Println()
+		fmt.Println()
 	}
-	fmt.Println("Movies: ", j)
 }
