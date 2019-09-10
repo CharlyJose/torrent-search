@@ -70,8 +70,11 @@ func main() {
 }
 
 func userInput() string {
+	if len(os.Args) < 2 {
+		fmt.Println("At least one argument expected")
+		os.Exit(0)
+	}
 	movieName := os.Args[1]
-	fmt.Println("Movie Name: ", movieName)
 	url := "https://yts.am/api/v2/list_movies.json?query_term=" + movieName + ""
 
 	return url
