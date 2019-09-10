@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -66,10 +67,11 @@ type YTS struct {
 }
 
 func main() {
-	Printer(readJSON(request(userInput())))
+	Printer(ReadJSON(RequestServer(GetUserInput())))
 }
 
-func userInput() string {
+// GetUserInput get the user input
+func GetUserInput() string {
 	if len(os.Args) < 2 {
 		fmt.Println("At least one argument expected")
 		os.Exit(0)
@@ -80,21 +82,31 @@ func userInput() string {
 	return url
 }
 
-func request(url string) *http.Response {
+// RequestServer request server
+func RequestServer(url string) *http.Response {
 	client := http.Client{
 		Timeout: time.Second * 20,
 	}
 
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
+
+		os.Exit(0)
 	}
 
 	req.Header.Set("User-Agent", "YTS MOVIE TORRENTS")
 
 	res, getErr := client.Do(req)
 	if getErr != nil {
-		log.Fatal(getErr)
+		// fmt.Println(getErr)
+		if strings.HasSuffix(fmt.Sprint(getErr), "no such host") {
+			fmt.Println("You might not be connected to the internet")
+		}
+		if strings.HasSuffix(fmt.Sprint(getErr), "access permissions.") {
+			fmt.Println("This application might be blocked by your firewall")
+		}
+		os.Exit(0)
 	}
 
 	return res
@@ -108,7 +120,8 @@ func request(url string) *http.Response {
 // 	return body
 // }
 
-func readJSON(res *http.Response) YTS {
+// ReadJSON parse the JSON
+func ReadJSON(res *http.Response) YTS {
 	var movies YTS
 	jsonParser := json.NewDecoder(res.Body)
 	err := jsonParser.Decode(&movies)
