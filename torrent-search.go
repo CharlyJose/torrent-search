@@ -153,7 +153,7 @@ func Printer(movies YTS) {
 	*/
 
 	for _, movielist := range movies.Data.Movies {
-		fmt.Printf("TITLE: %6s | RATING: %1f\n", movielist.TitleLong, movielist.Rating)
+		fmt.Printf("TITLE: %6s | RATING: %.1f\n", movielist.TitleLong, movielist.Rating)
 
 		fmt.Printf("GENRE: ")
 		for _, genre := range movielist.Genres {
