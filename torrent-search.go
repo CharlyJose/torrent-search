@@ -116,6 +116,10 @@ func readJSON(res *http.Response) YTS {
 		log.Fatal(err)
 		os.Exit(0)
 	}
+	if movies.Status != "ok" {
+		fmt.Println("Some error at other side")
+		os.Exit(0)
+	}
 	if movies.Data.MovieCount == 0 {
 		fmt.Println("No Movies found")
 		os.Exit(0)
