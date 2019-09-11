@@ -19,51 +19,25 @@ type YTS struct {
 		Limit      int `json:"limit"`
 		PageNumber int `json:"page_number"`
 		Movies     []struct {
-			ID                      int      `json:"id"`
-			URL                     string   `json:"url"`
-			ImdbCode                string   `json:"imdb_code"`
-			Title                   string   `json:"title"`
-			TitleEnglish            string   `json:"title_english"`
-			TitleLong               string   `json:"title_long"`
-			Slug                    string   `json:"slug"`
-			Year                    int      `json:"year"`
-			Rating                  float32  `json:"rating"`
-			Runtime                 int      `json:"runtime"`
-			Genres                  []string `json:"genres"`
-			Summary                 string   `json:"summary"`
-			DescriptionFull         string   `json:"description_full"`
-			Synopsis                string   `json:"synopsis"`
-			YtTrailerCode           string   `json:"yt_trailer_code"`
-			Language                string   `json:"language"`
-			MpaRating               string   `json:"mpa_rating"`
-			BackgroundImage         string   `json:"background_image"`
-			BackgroundImageOriginal string   `json:"background_image_original"`
-			SmallCoverImage         string   `json:"small_cover_image"`
-			MediumCoverImage        string   `json:"medium_cover_image"`
-			LargeCoverImage         string   `json:"large_cover_image"`
-			State                   string   `json:"state"`
-			Torrents                []struct {
-				URL              string `json:"url"`
-				Hash             string `json:"hash"`
-				Quality          string `json:"quality"`
-				Type             string `json:"type"`
-				Seeds            int    `json:"seeds"`
-				Peers            int    `json:"peers"`
-				Size             string `json:"size"`
-				SizeBytes        int    `json:"size_bytes"`
-				DateUploaded     string `json:"date_uploaded"`
-				DateUploadedUnix int    `json:"date_uploaded_unix"`
+			URL       string   `json:"url"`
+			ImdbCode  string   `json:"imdb_code"`
+			TitleLong string   `json:"title_long"`
+			Rating    float32  `json:"rating"`
+			Runtime   int      `json:"runtime"`
+			Genres    []string `json:"genres"`
+			Language  string   `json:"language"`
+			Torrents  []struct {
+				URL          string `json:"url"`
+				Quality      string `json:"quality"`
+				Type         string `json:"type"`
+				Seeds        int    `json:"seeds"`
+				Peers        int    `json:"peers"`
+				Size         string `json:"size"`
+				DateUploaded string `json:"date_uploaded"`
 			} `json:"torrents"`
-			DateUploaded     string `json:"date_uploaded"`
-			DateUploadedUnix int    `json:"date_uploaded_unix"`
+			DateUploaded string `json:"date_uploaded"`
 		} `json:"movies"`
 	} `json:"data"`
-	Meta struct {
-		ServerTime     int    `json:"server_time"`
-		ServerTimezone string `json:"server_timezone"`
-		APIVersion     int    `json:"api_version"`
-		ExecutionTime  string `json:"execution_time"`
-	} `json:"@meta"`
 }
 
 func main() {
@@ -146,8 +120,8 @@ func Printer(movies YTS) {
 	fmt.Println("Movie Count: ", movies.Data.MovieCount)
 
 	for _, movielist := range movies.Data.Movies {
-		fmt.Printf("%9s %-6s | RATING: %.1f\n", "TITLE:", movielist.TitleLong, movielist.Rating)
-
+		fmt.Printf("%9s %-6s | LANGUAGE: %6s | RUNTIME: %3d\n", "TITLE:", movielist.TitleLong, movielist.Language, movielist.Runtime)
+		fmt.Printf("%9s %-.1f\n", "RATING:", movielist.Rating)
 		fmt.Printf("%9s ", "GENRE:")
 		for _, genre := range movielist.Genres {
 			fmt.Printf("%6s ", genre)
@@ -155,9 +129,9 @@ func Printer(movies YTS) {
 		fmt.Println()
 
 		fmt.Printf("TORRENTS: \n")
-		for _, torrent := range movielist.Torrents {
-			fmt.Printf("\t%2sQUALITY: %4s | TYPE: %6s | SEEDS: %3d | PEERS: %3d\n", " ", torrent.Quality, torrent.Type, torrent.Seeds, torrent.Peers)
-			fmt.Printf("\t%2sURL: %6s", " ", torrent.URL)
+		for i, torrent := range movielist.Torrents {
+			fmt.Printf("\t%d%2sQUALITY: %5s | TYPE: %6s | SEEDS: %3d | PEERS: %3d\n", i+1, ". ", torrent.Quality, torrent.Type, torrent.Seeds, torrent.Peers)
+			fmt.Printf("\t %2sURL: %6s", " ", torrent.URL)
 			fmt.Println()
 		}
 		fmt.Println("\n")
